@@ -1,6 +1,7 @@
 from CFRACMethod import *
 from FermatMethod import *
 from PollardsMethod import *
+from BD import *
 from time import time
 import tkinter as tk
 from tkinter import ttk
@@ -12,6 +13,10 @@ from tkinter import messagebox
 def main():
     cript=tk.Tk()
     cript.title("EDO Solver")
+    Bd = BD()
+    Bd.createDB()
+    Bd.useDB()
+    Bd.createTables()
 
     labO=tk.Label(cript, text="CriptoProject")
     labO.config(fg="white", bg="#440c29", font="Cambria 40")
@@ -88,6 +93,12 @@ def main():
                     num = Fermat.x
                     tE1=time()
                     tF1=tE1-tI1
+                    #Agregar a BD
+                    toNum=",".join([str(_) for _ in num])
+                    datos = (n, toNum, tF1, 1)
+                    insertBd = BD()
+                    insertBd.useDB()
+                    insertBd.insert(datos)
 
                     most = tk.Text(cript, wrap=WORD)
                     most.insert(tk.END,num)
@@ -108,6 +119,7 @@ def main():
                 Poll=PollardsMethod()
                 list=[]
                 list2=[]
+                numberFirst = n
                 list2.append(int(n))
                 while Poll.oper(int(n)) > 0:
                     x=Poll.oper(int(n)) 
@@ -117,6 +129,12 @@ def main():
                 list.append(list2[-1])
                 tE=time()
                 tF=tE-tI
+                #Agregar a BD
+                toNum=",".join([str(_) for _ in list])
+                datos = (numberFirst, toNum, tF, 2)
+                insertBd = BD()
+                insertBd.useDB()
+                insertBd.insert(datos)
 
                 title = tk.Label(cript, text="Resultado:", font="Cambria 12", justify=tk.RIGHT)
                 title.config(fg="white", bg="#440c29", font="Cambria 12")

@@ -80,6 +80,7 @@ class FermatMethod:
 
     #Sacar El maximo de Primos
     def sacaMOPM(self, n):
+        self.x.clear()
         if n != None:
             for i in range(0, len(n)):
                 t=self.Rabin(int(n[i]))
