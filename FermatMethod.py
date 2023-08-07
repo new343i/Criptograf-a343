@@ -3,7 +3,6 @@ from random import randint
 import random
 import sys
 class FermatMethod:
-    
     def __init__(self, n):
         self.n=n
     
@@ -66,13 +65,17 @@ class FermatMethod:
     def factFermat(self, n):
         k=int(math.floor(math.sqrt(n))) + 1
         y=(k*k) - n
+        #print(k)
         d = 1
+        #Y = int(math.floor(math.sqrt(y)))
+        #print(Y == math.sqrt(y))
         while int(math.floor(math.sqrt(y))) < n / 2:
             if int(math.floor(math.sqrt(y))) == math.sqrt(y):
                 x = math.sqrt(n + y)
                 y = math.sqrt(y)
                 fact1 = x - y
                 fact2 = x + y
+                #print(fact1 , " " , fact2)
                 return fact1, fact2
             else:
                 y = y + 2*k + d

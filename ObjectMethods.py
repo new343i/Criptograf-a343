@@ -1,6 +1,6 @@
-from CFRACMethod import *
 from FermatMethod import *
 from PollardsMethod import *
+from DB import *
 from time import time
 import tkinter as tk
 from tkinter import ttk
@@ -75,19 +75,22 @@ def main():
             if str(ans) == "Factorizar Fermat":
                 Fermat = FermatMethod(n)
                 if Fermat.deterPar() != True:
-                    messagebox.showinfo(message="Introduce solo numeros impares!!", title="Mensajes")
+                    messagebox.showerror(message="Introduce solo numeros impares!!", title="Mensajes")
                 else:
                     title = tk.Label(cript, text="Resultado:", font="Cambria 12", justify=tk.RIGHT)
                     title.config(fg="white", bg="#440c29", font="Cambria 12")
                     title.grid(row=6, column=0)
-
                     tI1=time()
                     Fermat = FermatMethod(n)
+                    Fermat.x = []
                     Fermat.factFermat(n)
                     Fermat.sacaMOPM(Fermat.factFermat(int(n)))
                     num = Fermat.x
                     tE1=time()
                     tF1=tE1-tI1
+                    save = DataB(n, num, 'Fermat', tF1)
+                    save.tables()
+                    save.insert()
 
                     most = tk.Text(cript, wrap=WORD)
                     most.insert(tk.END,num)
@@ -105,26 +108,28 @@ def main():
 
             if str(ans) == "Factorizar Pollards":
                 tI=time()            
-                Poll=PollardsMethod()
-                list=[]
-                list2=[]
-                list2.append(int(n))
-                while Poll.oper(int(n)) > 0:
-                    x=Poll.oper(int(n)) 
-                    n=n/Poll.oper(int(n))
-                    list2.append(int(n))                                
-                    list.append(x)
-                list.append(list2[-1])
+                Poll=PollardsMethod(int(n), -10)
+                #list=[]
+                d1 = 'Error!!!'
+                try:                
+                    d1 = Poll.maxPrims()
+                except:
+                    messagebox.showwarning(message='Al parecer hubo un error con este numero: {}'.format(n), title='Alerta')
                 tE=time()
                 tF=tE-tI
+                save = DataB(n, d1, 'Pollards', tF)
+                save.tables()                                
+                if (d1 != 'Error!!!'):                              
+                    save.insert()
+
 
                 title = tk.Label(cript, text="Resultado:", font="Cambria 12", justify=tk.RIGHT)
                 title.config(fg="white", bg="#440c29", font="Cambria 12")
                 title.grid(row=6, column=0)
 
                 most = tk.Text(cript, wrap=WORD)
-                most.insert(tk.END, list)
-                most.config(fg="white", bg="#440c29", font="Cambria 12", relief="sunken", border=5, width=20, height=5)
+                most.insert(tk.END, d1)
+                most.config(fg="white", bg="#440c29", font="Cambria 12", relief="sunken", border=5, width=20, height=3)
                 most.grid(row=7, column=0, pady=10)
 
                 time1 = tk.Label(cript, text="Tiempo de Procesamiento:", font="Cambria 12", justify=tk.RIGHT)
@@ -133,18 +138,74 @@ def main():
 
                 most = tk.Text(cript, wrap=WORD)
                 most.insert(tk.END, tF)
-                most.config(fg="white", bg="#440c29", font="Cambria 12", relief="sunken", border=5, width=20, height=5)
+                most.config(fg="white", bg="#440c29", font="Cambria 12", relief="sunken", border=5, width=20, height=3)
                 most.grid(row=9, column=0, pady=10)
 
     button_border = tk.Frame(cript, highlightbackground="white", highlightthickness=1, bd=0, bg="#440c29")
     manR = tk.Button(button_border, text="Calcular", command=lambda: mandar(insR1.get(), int(insX.get())))
     manR.grid(row=5, column=0)
     button_border.grid(row=13, column=0, columnspan=2, pady=15)
-    manR.config(width=20, height=1, fg="white", bg="#440c29", font="Cambria 10", relief="groove")
+    manR.config(width=20, height=1, fg="white", bg="#440c29", font="Cambria 10", relief="groove")    
+
+    def launchQuerys():
+        global consultas
+        consultas = tk.Toplevel(cript)
+        consultas.title('Consultas')
+        save = DataB(0, 0, '', 0)
+        
+        labelT = tk.Label(consultas, text="Consultas", font="Cambria 12", justify=tk.CENTER)
+        labelT.config(fg="white", bg="#440c29", font="Cambria 40")
+        labelT.grid(row=0, column=0, columnspan=5)
+        
+        def deleteData(id):
+            response = messagebox.askokcancel(message='Seguro que quieres eliminar?', title='Eliminar Entrada')
+            if response == True:
+                save.delete(id)        
+        def tabla():
+            lst = save.selectAll()
+            if lst == []:
+                lst = [('N//A')]
+    
+            global total_rows
+            total_rows = len(lst)
+            total_columns = len(lst[0])
+        
+        
+            for i in range(total_rows):
+                for j in range(total_columns):
+                    e = Entry(consultas)
+                    e.grid(row=i+1, column=j)
+                    e.insert(tk.END, lst[i][j])
+                    e.config(width=25, font=('Cambria',14,'bold'), bg='#440c29', fg='white', justify=tk.CENTER)
+                button_delete = tk.Frame(consultas, highlightbackground="white", highlightthickness=1, bd=0, bg="#440c29")
+                if lst != [('N//A')]:
+                    delete = tk.Button(button_delete, text="Eliminar", command=lambda: deleteData(i+1))
+                else:
+                    delete = tk.Button(button_delete, text="XD")
+                delete.grid(row=5, column=0)
+                button_delete.grid(row=i+1, column=4)
+                delete.config(width=20, height=1, fg="white", bg="#440c29", font="Cambria 10", relief="groove")    
+        tabla()
+        
+        refresh_border = tk.Frame(consultas, highlightbackground="white", highlightthickness=1, bd=0, bg="#440c29")
+        refresh = tk.Button(refresh_border, text="Refresh", command=lambda: tabla())
+        refresh.grid(row=5, column=2)
+        refresh_border.grid(row=total_rows + 1, column=2, pady=15)
+        refresh.config(width=20, height=1, fg="white", bg="#440c29", font="Cambria 10", relief="groove")    
+
+        
+        consultas.config(background="#440c29", border=15)
+        consultas.geometry("1250x700")
 
 
+    button_border1 = tk.Frame(cript, highlightbackground="white", highlightthickness=1, bd=0, bg="#440c29")
+    consultar = tk.Button(button_border1, text="Consultar", command=lambda: launchQuerys())    
+    consultar.grid(row=5, column=0)
+    button_border1.grid(row=17, column=0, columnspan=2)
+    consultar.config(width=20, height=1, fg="white", bg="#440c29", font="Cambria 10", relief="groove")    
+    
     cript.config(background="#440c29", border=15)
-    cript.geometry("457x650")
+    cript.geometry("420x700")
     cript.mainloop()
 
 
