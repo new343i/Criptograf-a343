@@ -6,7 +6,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import *
 from tkinter import messagebox
-
+from sympy import *
 
     #Test de multiplos
 def main():
@@ -142,7 +142,7 @@ def main():
                 most.grid(row=9, column=0, pady=10)
 
     button_border = tk.Frame(cript, highlightbackground="white", highlightthickness=1, bd=0, bg="#440c29")
-    manR = tk.Button(button_border, text="Calcular", command=lambda: mandar(insR1.get(), int(insX.get())))
+    manR = tk.Button(button_border, text="Calcular", command=lambda: mandar(insR1.get(), eval(insX.get())))
     manR.grid(row=5, column=0)
     button_border.grid(row=13, column=0, columnspan=2, pady=15)
     manR.config(width=20, height=1, fg="white", bg="#440c29", font="Cambria 10", relief="groove")    
