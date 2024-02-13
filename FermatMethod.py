@@ -29,30 +29,38 @@ class FermatMethod:
             else:
                 return False
 
-    #Test de primalidad en base a Rabin-Miller
-    def Rabin(self, n, k = 7):
-        if n < 6:  # asumiendo n >= 0 en todos los casos ... pequeño atajo de casos aquí
-            return [False, False, True, True, False, True][n]
-        elif n & 1 == 0:  # Debería ser más rápido que n % 2
+    
+       # Test de primalidad en base a Rabin-Miller
+    def Rabin(self, n, k=7):
+        if n < 2:
             return False
-        else:
-            s, d = 0, n - 1
-            while d & 1 == 0:
-                s, d = s + 1, d >> 1
-        # Utilice random.randint (2, n-2) para números muy grandes
-            for a in random.sample(range(2, min(n - 2, sys.maxsize)), min(n - 4, k)):
-                x = pow(a, d, n)
-                if x != 1 and x + 1 != n:
-                    for r in range(1, s):
-                        x = pow(x, 2, n)
-                        if x == 1:
-                            return False  # compuesto seguro
-                        elif x == n - 1:
-                            a = 0  # entonces sabemos que el bucle no continuó hasta terminar
-                            break  # Podría ser un Falso fuerte, prueba con otro a
-                    if a:
-                        return False  # Compuesto si llegamos al final de este bucle
+        if n < 4:
             return True
+        if n % 2 == 0:
+            return False
+
+        # Descomponer n - 1 en la forma (2^s) * d
+        s, d = 0, n - 1
+        while d % 2 == 0:
+            s += 1
+            d //= 2
+
+        # Realizar las iteraciones de Rabin-Miller
+        for _ in range(k):
+            a = random.randint(2, n - 2)
+            x = pow(a, d, n)
+
+            if x == 1 or x == n - 1:
+                continue
+
+            for _ in range(s - 1):
+                x = pow(x, 2, n)
+                if x == n - 1:
+                    break
+            else:
+                return False
+
+        return True
 
     #Determinar si es impar
     def deterPar(self):
@@ -81,18 +89,17 @@ class FermatMethod:
                 y = y + 2*k + d
                 d = d + 2
 
-    #Sacar El maximo de Primos
+     # Sacar el máximo de primos
     def sacaMOPM(self, n):
-        if n != None:
-            for i in range(0, len(n)):
-                t=self.Rabin(int(n[i]))
-                if t == True:
-                    #print(n[i])
-                    self.x.append(n[i])
-                    #print(x)
-                else:
-                    self.sacaMOPM(self.factFermat(int(n[i])))
-        else:
-            return "No se encontraron factores"
+        if n is not None:
+            for i in range(len(n)):
+                if isinstance(n[i], int):
+                    t = self.Rabin(n[i])
+                    if t:
+                        self.x.append(n[i])
 
-    x = []
+                    # Evitar llamada recursiva si ya encontraste un primo
+                    if not t or not self.x:
+                        self.sacaMOPM(self.factFermat(n[i]))
+
+        return self.x if self.x else "No se encontraron factores primos"
