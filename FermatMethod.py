@@ -2,18 +2,15 @@ import math
 from random import randint
 import random
 import sys
+
 class FermatMethod:
     def __init__(self, n):
-        self.n=n
+        self.n = n
+        self.x = []  # Inicializar la lista x
     
 #Test de enteros
-    def testInt(self,b):
-        bround=round(b)
-        terminal=b-bround
-        if terminal == 0:
-            return True
-        else:
-            return False
+    def testInt(self, b):
+        return b.is_integer() and b > 1
 
     #Test de multiplos
     def multi(self, n, multiplo):
@@ -21,13 +18,12 @@ class FermatMethod:
 
     #Test de primalidad en base a Fermat
     def testPrim(self):
-        for i in range(1, 20):
-            a=randint(1, self.n-1)
-            nummult=pow(a, self.n-1) - 1
+        for _ in range(1, 20):
+            a = randint(1, self.n - 1)
+            nummult = pow(a, self.n - 1, self.n) - 1
             if self.multi(nummult, self.n) == True:
                 return True
-            else:
-                return False
+        return False  # Retorna False después de todas las iteraciones
 
     
        # Test de primalidad en base a Rabin-Miller
@@ -91,15 +87,12 @@ class FermatMethod:
 
      # Sacar el máximo de primos
     def sacaMOPM(self, n):
-        if n is not None:
-            for i in range(len(n)):
-                if isinstance(n[i], int):
-                    t = self.Rabin(n[i])
-                    if t:
-                        self.x.append(n[i])
-
-                    # Evitar llamada recursiva si ya encontraste un primo
-                    if not t or not self.x:
-                        self.sacaMOPM(self.factFermat(n[i]))
+        for num in n:
+            if isinstance(num, int):
+                if self.Rabin(num):
+                    self.x.append(num)
+                else:
+                    factors = self.factFermat(num)
+                    self.x.extend(factors)
 
         return self.x if self.x else "No se encontraron factores primos"
