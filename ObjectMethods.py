@@ -85,6 +85,7 @@ def main():
                     Fermat.x = []
                     Fermat.factFermat(n)
                     Fermat.sacaMOPM(Fermat.factFermat(int(n)))
+                    
                     num = Fermat.x
                     tE1=time()
                     tF1=tE1-tI1

@@ -67,32 +67,46 @@ class FermatMethod:
 
     #Factorizar mediante Fermat
     def factFermat(self, n):
-        k=int(math.floor(math.sqrt(n))) + 1
-        y=(k*k) - n
+        k=int(math.floor(math.sqrt(n))) + 1 #paso 1
+        y=(k*k) - n #paso 1
         #print(k)
-        d = 1
-        #Y = int(math.floor(math.sqrt(y)))
-        #print(Y == math.sqrt(y))
-        while int(math.floor(math.sqrt(y))) < n / 2:
-            if int(math.floor(math.sqrt(y))) == math.sqrt(y):
-                x = math.sqrt(n + y)
-                y = math.sqrt(y)
-                fact1 = x - y
-                fact2 = x + y
-                #print(fact1 , " " , fact2)
-                return fact1, fact2
+        d = 1 #paso 1
+     
+        if int(math.floor(math.sqrt(y))) == math.sqrt(y): #paso 2
+            x = math.sqrt(n + y)  #PASO 4
+            y = math.sqrt(y)  #PASO 4
+            fact1 = x - y  #PASO 4
+            fact2 = x + y    #PASO 4
+                
+            return fact1, fact2  #PASO 5
+        else:
+            y = y + 2*k + d # ELSE del paso 2
+            d = d + 2   #ELSE de paso 2
+
+
+        if int(math.floor(math.sqrt(y))) < n / 2: #paso 3 // debería usarse un IF no un WHILE
+            if int(math.floor(math.sqrt(y))) == math.sqrt(y): #paso 2
+                x = math.sqrt(n + y)  #PASO 4
+                y = math.sqrt(y)  #PASO 4
+                fact1 = x - y  #PASO 4
+                fact2 = x + y    #PASO 4
+                
+                return fact1, fact2  #PASO 5
             else:
-                y = y + 2*k + d
-                d = d + 2
+                y = y + 2*k + d # ELSE del paso 2
+                d = d + 2   #ELSE de paso 2
+        else:
+            return "No se encontraron factores"
+
 
      # Sacar el máximo de primos
-    def sacaMOPM(self, n):
-        for num in n:
-            if isinstance(num, int):
-                if self.Rabin(num):
-                    self.x.append(num)
-                else:
-                    factors = self.factFermat(num)
-                    self.x.extend(factors)
+    def sacaMOPM(self, num):
+        #for num in n:
+        if isinstance(num, int):
+            if self.Rabin(num):
+                self.x.append(num)
+            else:
+                factors = self.factFermat(num)
+                self.x.extend(factors)
 
-        return self.x if self.x else "No se encontraron factores primos"
+            return self.x if self.x else "No se encontraron factores primos"
